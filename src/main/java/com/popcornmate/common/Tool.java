@@ -46,4 +46,23 @@ public class Tool {
         }
         return null;
     }
+    public boolean isImage(MultipartFile file){
+        try {
+            String fileExtension;
+            String originalFileName = file.getOriginalFilename();
+            int dotIndex = originalFileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
+                fileExtension = originalFileName.substring(dotIndex + 1);
+                String[] imageExtension = {"jpg","jpeg","png","webp","svg","ico"};
+                for (String i : imageExtension){
+                    if (fileExtension.equals(i)){
+                        return true;
+                    }
+                }
+            }
+        } catch (NullPointerException e){
+            return false;
+        }
+        return false;
+    }
 }

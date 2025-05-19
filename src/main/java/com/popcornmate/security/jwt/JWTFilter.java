@@ -44,6 +44,11 @@ public class JWTFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         if(checkUrl(path)){
             String authorization = request.getHeader("Authorization");
+            if(authorization == null){
+                System.out.println("token이 없거나, Bearer가 포함되어 있지 않습니다.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"토큰이 없거나, Bearer가 포함되어 있지 않습니다.");
+                return;
+            }
             if(authorization.equals("GodToken")){
                 User user = new User();
                 user.setId("test");
@@ -56,11 +61,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
                 filterChain.doFilter(request,response);
-                return;
-            }
-            if(authorization == null || !authorization.startsWith("Bearer ")){
-                System.out.println("token이 없거나, Bearer가 포함되어 있지 않습니다.");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"토큰이 없거나, Bearer가 포함되어 있지 않습니다.");
                 return;
             }
             String token = authorization.split(" ")[1];
