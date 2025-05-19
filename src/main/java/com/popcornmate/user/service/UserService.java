@@ -68,4 +68,10 @@ public class UserService {
         userRepository.save(user);
         deletedUserRepository.save(deletedUser);
     }
+    @Transactional
+    public void updateLastLoginTime(Integer userCode) {
+        User user = userRepository.getReferenceById(userCode);
+        user.setLastLoginTime(LocalDateTime.now());
+        userRepository.save(user);
+    }
 }

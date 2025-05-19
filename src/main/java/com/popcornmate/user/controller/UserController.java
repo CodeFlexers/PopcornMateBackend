@@ -8,7 +8,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/users", produces = "application/json; charset=utf8")
@@ -17,6 +16,12 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    @GetMapping
+    public ResponseEntity<UserDto> getUserById(){
+        return null;
+    }
+
     @PatchMapping("/profile")
     public ResponseEntity<?> updateUserById(@AuthenticationPrincipal CustomUserDetails user, @ModelAttribute UserDto updateData){
         if(updateData.getUserCode().equals(user.getUserCode())){    //수정하려는 유저와, 토큰의 유저 코드를 비교한다.
