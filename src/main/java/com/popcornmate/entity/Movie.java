@@ -17,7 +17,6 @@ import java.util.List;
 @Getter@Setter
 public class Movie {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_code")
     private Long movieCode;
     @Column(name = "title")
