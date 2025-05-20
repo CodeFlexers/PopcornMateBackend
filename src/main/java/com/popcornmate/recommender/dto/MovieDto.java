@@ -1,6 +1,5 @@
-package com.popcornmate.track.dto;
+package com.popcornmate.recommender.dto;
 
-import com.popcornmate.recommender.dto.GenreDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
