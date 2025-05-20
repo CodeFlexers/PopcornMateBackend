@@ -1,4 +1,4 @@
-package com.popcornmate.user.repository;
+package com.popcornmate.repository;
 
 import com.popcornmate.entity.DeletedUser;
 import org.springframework.data.jpa.repository.JpaRepository;

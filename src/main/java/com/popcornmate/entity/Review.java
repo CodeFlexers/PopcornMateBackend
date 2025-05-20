@@ -1,5 +1,6 @@
 package com.popcornmate.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,9 +30,17 @@ public class Review {
     @Column(name = "is_edit")
     private boolean isEdit;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movie_code")
+    private Movie movie;
     @OneToOne
     @JoinColumn(name = "user_code")
     private User user;
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private List<ReviewComment> commentList = new ArrayList<>();
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
+    private List<ReviewReaction> reactionList = new ArrayList<>();
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
+    private List<ReportedReview> reportedList = new ArrayList<>();
 }
