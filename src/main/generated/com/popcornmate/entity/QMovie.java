@@ -22,6 +22,8 @@ public class QMovie extends EntityPathBase<Movie> {
 
     public final StringPath backdropPath = createString("backdropPath");
 
+    public final ListPath<Genre, QGenre> genres = this.<Genre, QGenre>createList("genres", Genre.class, QGenre.class, PathInits.DIRECT2);
+
     public final BooleanPath isAdult = createBoolean("isAdult");
 
     public final BooleanPath isVideo = createBoolean("isVideo");
@@ -36,7 +38,7 @@ public class QMovie extends EntityPathBase<Movie> {
 
     public final StringPath posterPath = createString("posterPath");
 
-    public final DateTimePath<java.time.LocalDateTime> releaseDate = createDateTime("releaseDate", java.time.LocalDateTime.class);
+    public final DatePath<java.time.LocalDate> releaseDate = createDate("releaseDate", java.time.LocalDate.class);
 
     public final ListPath<Review, QReview> reviews = this.<Review, QReview>createList("reviews", Review.class, QReview.class, PathInits.DIRECT2);
 
