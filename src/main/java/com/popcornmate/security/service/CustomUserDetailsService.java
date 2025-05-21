@@ -2,7 +2,7 @@ package com.popcornmate.security.service;
 
 import com.popcornmate.entity.User;
 import com.popcornmate.security.dto.CustomUserDetails;
-import com.popcornmate.security.repository.UserRepository;
+import com.popcornmate.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -2,9 +2,8 @@ package com.popcornmate.security.jwt;
 
 
 
-import com.popcornmate.entity.User;
 import com.popcornmate.security.dto.CustomUserDetails;
-import com.popcornmate.security.repository.UserRepository;
+import com.popcornmate.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +16,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -26,10 +24,12 @@ import java.util.Iterator;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final UserService userService;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     /**
@@ -62,7 +62,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      * @throws ServletException .
      */
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         System.out.println("로그인 성공");
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
         String accountId = customUserDetails.getUsername();
@@ -72,6 +72,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String accountRole = auth.getAuthority();
         Integer accountCode = customUserDetails.getUserCode();
+        userService.updateLastLoginTime(accountCode);
         String token = jwtUtil.createJwt(accountCode,accountId, accountRole,  1000 * 60 * 60 * 10L); //1000 = 1초 * 60 -> 1분 * 60 -> 1시간 * 10 -> 10시간
         String refreshToken = jwtUtil.createJwt(accountCode,accountId,accountRole,1000 * 60 * 60 * 24 * 7L);
         //여기에 User DB에 리프레시 토큰 추가하기

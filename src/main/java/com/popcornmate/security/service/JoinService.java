@@ -2,7 +2,7 @@ package com.popcornmate.security.service;
 
 import com.popcornmate.entity.User;
 import com.popcornmate.security.dto.JoinDTO;
-import com.popcornmate.security.repository.UserRepository;
+import com.popcornmate.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -3,6 +3,7 @@ package com.popcornmate.security.config;
 import com.popcornmate.security.jwt.JWTFilter;
 import com.popcornmate.security.jwt.JWTUtil;
 import com.popcornmate.security.jwt.LoginFilter;
+import com.popcornmate.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -26,10 +27,12 @@ import java.util.Collections;
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final UserService userService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, UserService userService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     @Bean   //빈이기 때문에 주입 가능하다.
@@ -91,7 +94,7 @@ public class SecurityConfig {
                             response.getWriter().write("{\"error\": \"권한 부족\", \"message\": \"어드민만 접근 가능합니다.\"}");
                         }));
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, userService), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session)-> session
