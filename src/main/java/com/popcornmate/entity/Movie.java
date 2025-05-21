@@ -1,11 +1,9 @@
 package com.popcornmate.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter@Setter
+@Builder
 public class Movie {
     @Id
     @Column(name = "movie_code")
@@ -24,7 +23,7 @@ public class Movie {
     @Column(name = "overview")
     private String overview;
     @Column(name = "release_date")
-    private LocalDateTime releaseDate;
+    private LocalDate releaseDate;
     @Column(name = "popularity")
     private float popularity;
     @Column(name = "backdrop_path")
@@ -43,5 +42,8 @@ public class Movie {
     private int voteCount;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "movie")
+    private List<Genre> genres = new ArrayList<>();
 }
