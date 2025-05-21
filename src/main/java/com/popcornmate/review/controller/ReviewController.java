@@ -80,11 +80,7 @@ public class ReviewController {
 
     @DeleteMapping("/comments/{reviewCode}")
     public ResponseEntity<String> deleteReviewComment(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, Integer reviewCommentCode){
-        try {
-            reviewService.deleteReviewComment(user.getUserCode(),reviewCode, reviewCommentCode);
-            return ResponseEntity.ok().build();
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        reviewService.deleteReviewComment(user.getUserCode(),reviewCode, reviewCommentCode);
+        return ResponseEntity.ok().build();
     }
 }

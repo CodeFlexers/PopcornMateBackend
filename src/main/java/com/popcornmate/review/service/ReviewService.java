@@ -147,11 +147,11 @@ public class ReviewService {
         reviewCommentRepository.save(reviewComment);
     }
     @Transactional
-    public void deleteReviewComment(Integer userCode, Integer reviewCode, Integer reviewCommentCode) throws Exception {
+    public void deleteReviewComment(Integer userCode, Integer reviewCode, Integer reviewCommentCode) {
         ReviewComment reviewComment = reviewCommentRepository
                 .findByReviewCommentCodeAndReviewReviewCodeAndUserUserCode(reviewCommentCode, reviewCode, userCode);
         if(reviewComment==null){
-            throw new Exception("댓글이 존재하지 않거나 권한이 없습니다.");
+            throw new EntityNotFoundException("댓글이 존재하지 않거나 권한이 없습니다.");
         }
         reviewCommentRepository.delete(reviewComment);
     }
