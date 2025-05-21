@@ -30,4 +30,11 @@ public class ReviewReaction {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_code")
     private User user;
+
+    public ReviewReaction(Review review, User user, LocalDateTime reactedTime, ReviewReactionEnum reaction) {
+        this.review = review;
+        this.user = user;
+        this.reactedTime = reactedTime;
+        this.reaction = reaction;
+    }
 }

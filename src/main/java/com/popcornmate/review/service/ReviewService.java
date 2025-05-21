@@ -3,10 +3,13 @@ package com.popcornmate.review.service;
 import com.popcornmate.entity.*;
 import com.popcornmate.repository.*;
 import com.popcornmate.review.dto.ReviewCreateDto;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Service
 public class ReviewService {
@@ -25,116 +28,131 @@ public class ReviewService {
         this.reviewCommentRepository = reviewCommentRepository;
     }
     @Transactional
-    public void createReview(Integer userCode, ReviewCreateDto updateData) throws Exception {
-        try {
-            User user = userRepository.getReferenceById(userCode);
-            Movie movie = movieRepository.getReferenceById(updateData.getMovieCode());
-            Review review = new Review();
-            review.setRate(updateData.getRate());
-            review.setContent(updateData.getContent());
-            review.setMovie(movie);
-            review.setWroteAt(LocalDateTime.now());
-            review.setEdit(false);
-            review.setUser(user);
+    public void createReview(Integer userCode, ReviewCreateDto updateData) {
+            Review review = new Review(
+                    updateData.getContent(),
+                    updateData.getRate(),
+                    movieRepository.getReferenceById(updateData.getMovieCode()),
+                    LocalDateTime.now(),
+                    false,
+                    userRepository.getReferenceById(userCode)
+            );
             reviewRepository.save(review);
-        } catch (Exception e){
-            throw new Exception("에러 처리 하자");
-        }
     }
     @Transactional
-    public void updateReview(Integer userCode, Integer reviewCode, ReviewCreateDto updateData) throws Exception{
-        try{
-            Review review = reviewRepository.selectReviewCodeAndUserCode(userCode, reviewCode);
-            float rate = updateData.getRate()==0f ? review.getRate(): updateData.getRate();
-            String content = updateData.getContent()==null ? review.getContent() : updateData.getContent();
-            review.setRate(rate);
-            review.setContent(content);
-            review.setEdit(true);
-            reviewRepository.save(review);
-        } catch (Exception e){
-            throw new Exception(e.getMessage() + " : "+"수정 요청 유저와 리뷰 작성 유저가 다를 가능성이 큽니다.");
+    public void updateReview(Integer userCode, Integer reviewCode, ReviewCreateDto updateData) {
+        Review review = reviewRepository.selectReviewCodeAndUserCode(userCode, reviewCode);
+
+        if(!review.getUser().getUserCode().equals(userCode)){
+            throw new AccessDeniedException("본인이 작성한 리뷰만 수정할 수 있습니다.");
         }
+
+        float rate = updateData.getRate()==0f ? review.getRate(): updateData.getRate();
+        String content = updateData.getContent()==null ? review.getContent() : updateData.getContent();
+
+        review.setRate(rate);
+        review.setContent(content);
+        review.setEdit(true);
+
+        reviewRepository.save(review);
     }
     @Transactional
-    public void deleteReview(Integer userCode, Integer reviewCode) throws Exception {
+    public void deleteReview(Integer userCode, Integer reviewCode) {
+        Review review = reviewRepository.findById(reviewCode).orElseThrow();
+        if(!review.getUser().getUserCode().equals(userCode)){
+            throw new AccessDeniedException("본인이 작성한 리뷰만 삭제할 수 있습니다.");
+        }
+        reviewRepository.delete(review);
+    }
+    @Transactional
+    public ReviewReactionEnum reactionReview(Integer userCode, Integer reviewCode, String reaction) {
+        ReviewReactionEnum requested = Arrays.stream(ReviewReactionEnum.values())
+                .filter(e -> e.name().equals(reaction.trim()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("지원하지 않는 반응: " + reaction));
+        Review review;
+        User user;
         try {
-            Review review = reviewRepository.findById(reviewCode).orElseThrow();
-            if(review.getUser().getUserCode().equals(userCode)){
-                reviewRepository.delete(review);
-            } else {
-                throw new Exception();
-            }
-        } catch (Exception e){
-            throw new Exception("에러 처리");
+            review = reviewRepository.getReferenceById(reviewCode);
+            user = userRepository.getReferenceById(userCode);
+        } catch (EntityNotFoundException e){
+            throw new EntityNotFoundException("유저, 또는 리뷰가 존재하지 않습니다.");
         }
-    }
-    @Transactional
-    public void reactionReview(Integer userCode, Integer reviewCode, String reaction) {
-        ReviewReaction reviewReaction = reviewReactionRepository.selectUserCodeAndReviewCode(userCode,reviewCode);
-        Review review = reviewRepository.getReferenceById(reviewCode);
-        if(reviewReaction==null){ //한 번도 누른적 없음
-            ReviewReaction r = new ReviewReaction();
-            r.setReview(review);
-            r.setReactedTime(LocalDateTime.now());
-            r.setUser(userRepository.getReferenceById(userCode));
-            r.setReaction(ReviewReactionEnum.valueOf(reaction));
-            reviewReactionRepository.save(r);
-        } else if( reviewReaction.getReaction().name().equals("like")|| reviewReaction.getReaction().name().equals("dislike")) {    //이미 좋아요, 싫어요 누름
-            reviewReactionRepository.delete(reviewReaction);
+
+        ReviewReaction existing = reviewReactionRepository.selectUserCodeAndReviewCode(userCode, reviewCode);
+
+        // 없으면 새로 생성
+        if (existing == null) {
+            ReviewReaction newReaction = new ReviewReaction(
+                    review,
+                    user,
+                    LocalDateTime.now(),
+                    requested
+            );
+            reviewReactionRepository.save(newReaction);
+            return requested;
         }
+        ReviewReactionEnum current = existing.getReaction();
+        // 동일한 반응이면 삭제
+        if (current == requested) {
+            reviewReactionRepository.delete(existing);
+            return null; // React NONE
+        }
+
+        // 반대 반응이면 값만 교체
+        existing.setReaction(requested);
+        existing.setReactedTime(LocalDateTime.now());
+        return requested;
     }
     @Transactional
     public void reportReview(Integer userCode, Integer reviewCode, String reason) {
-        //이미 같은 유저가 신고 했는지 확인
-        Boolean isAlreadyReported = reportedReviewRepository.existsByUserUserCodeAndReviewReviewCode(userCode, reviewCode);
-        if(!isAlreadyReported){ //없으면
-            ReportedReview r = new ReportedReview();
-            r.setReason(reason);
-            r.setReview(reviewRepository.getReferenceById(reviewCode));
-            r.setUser(userRepository.getReferenceById(userCode));
+        boolean alreadyReported = reportedReviewRepository.existsByUserUserCodeAndReviewReviewCode(userCode, reviewCode);
+
+        if (alreadyReported) {
+            throw new EntityNotFoundException("이미 해당 리뷰를 신고했습니다.");
+        }
+        try {
+            Review review = reviewRepository.getReferenceById(reviewCode);
+            User user = userRepository.getReferenceById(userCode);
+            ReportedReview r = new ReportedReview(reason, review, user);
             reportedReviewRepository.save(r);
-        } else {    // 있으면
-            System.out.println("이미 신고함");
-        }
-        //이 리뷰에 신고가 n건 있습니다 return
-    }
-    @Transactional
-    public void createReviewComment(Integer userCode, Integer reviewCode, String content) throws Exception {
-        try {
-            ReviewComment comment = new ReviewComment();
-            comment.setContent(content);
-            comment.setEdit(false);
-            comment.setUser(userRepository.getReferenceById(userCode));
-            comment.setWroteAt(LocalDateTime.now());
-            comment.setReview(reviewRepository.getReferenceById(reviewCode));
-            reviewCommentRepository.save(comment);
-        } catch (Exception e){
-            throw new Exception("에러 발생");
+        } catch (EntityNotFoundException e){
+            throw new EntityNotFoundException("리뷰 또는 유저가 존재하지 않습니다.");
         }
     }
     @Transactional
-    public void updateReviewComment(Integer userCode, Integer reviewCode, String content, Integer reviewCommentCode) throws Exception {
+    public void createReviewComment(Integer userCode, Integer reviewCode, String content) {
+        Review review;
+        User user;
         try {
-            ReviewComment reviewComment = reviewCommentRepository.findByReviewCommentCodeAndReviewReviewCodeAndUserUserCode(reviewCommentCode, reviewCode, userCode);
-            if(reviewComment==null){
-                throw new Exception("정상적이지 않은 요청");
-            }
-            reviewComment.setContent(content);
-            reviewCommentRepository.save(reviewComment);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+            review = reviewRepository.getReferenceById(reviewCode);
+            user = userRepository.getReferenceById(userCode);
+        } catch (EntityNotFoundException e){
+            throw new EntityNotFoundException("리뷰 또는 유저가 존재하지 않습니다.");
         }
+
+        ReviewComment comment = new ReviewComment(content,false,LocalDateTime.now(),user,review);
+
+        reviewCommentRepository.save(comment);
+    }
+    @Transactional
+    public void updateReviewComment(Integer userCode, Integer reviewCode, String content, Integer reviewCommentCode) {
+        ReviewComment reviewComment = reviewCommentRepository
+                .findByReviewCommentCodeAndReviewReviewCodeAndUserUserCode(reviewCommentCode, reviewCode, userCode);
+        if(reviewComment==null){
+            throw new EntityNotFoundException("댓글이 존재하지 않거나 권한이 없습니다.");
+        }
+        reviewComment.setContent(content);
+        reviewComment.setEdit(true);
+        reviewCommentRepository.save(reviewComment);
     }
     @Transactional
     public void deleteReviewComment(Integer userCode, Integer reviewCode, Integer reviewCommentCode) throws Exception {
-        try {
-            ReviewComment reviewComment = reviewCommentRepository.findByReviewCommentCodeAndReviewReviewCodeAndUserUserCode(reviewCommentCode, reviewCode, userCode);
-            if(reviewComment==null){
-                throw new Exception("정상적이지 않은 요청");
-            }
-            reviewCommentRepository.delete(reviewComment);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+        ReviewComment reviewComment = reviewCommentRepository
+                .findByReviewCommentCodeAndReviewReviewCodeAndUserUserCode(reviewCommentCode, reviewCode, userCode);
+        if(reviewComment==null){
+            throw new Exception("댓글이 존재하지 않거나 권한이 없습니다.");
         }
+        reviewCommentRepository.delete(reviewComment);
     }
 }

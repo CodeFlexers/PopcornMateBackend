@@ -25,4 +25,10 @@ public class ReportedReview {
     @OneToOne
     @JoinColumn(name = "user_code")
     private User user;
+
+    public ReportedReview(String reason, Review review, User user) {
+        this.reason = reason;
+        this.review = review;
+        this.user = user;
+    }
 }

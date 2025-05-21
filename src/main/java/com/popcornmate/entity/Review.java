@@ -43,4 +43,13 @@ public class Review {
     private List<ReviewReaction> reactionList = new ArrayList<>();
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private List<ReportedReview> reportedList = new ArrayList<>();
+
+    public Review(String content, float rate, Movie movie, LocalDateTime wroteAt, boolean isEdit, User user) {
+        this.content = content;
+        this.rate = rate;
+        this.movie = movie;
+        this.wroteAt = wroteAt;
+        this.isEdit = isEdit;
+        this.user = user;
+    }
 }

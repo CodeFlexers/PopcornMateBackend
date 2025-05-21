@@ -32,4 +32,12 @@ public class ReviewComment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_code")
     private Review review;
+
+    public ReviewComment(String content, boolean isEdit, LocalDateTime wroteAt, User user, Review review) {
+        this.content = content;
+        this.isEdit = isEdit;
+        this.wroteAt = wroteAt;
+        this.user = user;
+        this.review = review;
+    }
 }
