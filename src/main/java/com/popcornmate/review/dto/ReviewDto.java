@@ -10,7 +10,10 @@ public record ReviewDto(
         boolean isEdit,
         Long movieCode,
         String userNickname,
-        String profileImage
+        String profileImage,
+        Long commentCount,
+        Long likeCount,
+        Long dislikeCount
 ) {
 
 }

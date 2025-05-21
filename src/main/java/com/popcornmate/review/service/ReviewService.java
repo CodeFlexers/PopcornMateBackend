@@ -15,12 +15,14 @@ public class ReviewService {
     private final MovieRepository movieRepository;
     private final ReviewReactionRepository reviewReactionRepository;
     private final ReportedReviewRepository reportedReviewRepository;
-    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, MovieRepository movieRepository, ReviewReactionRepository reviewReactionRepository, ReportedReviewRepository reportedReviewRepository) {
+    private final ReviewCommentRepository reviewCommentRepository;
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, MovieRepository movieRepository, ReviewReactionRepository reviewReactionRepository, ReportedReviewRepository reportedReviewRepository, ReviewCommentRepository reviewCommentRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.movieRepository = movieRepository;
         this.reviewReactionRepository = reviewReactionRepository;
         this.reportedReviewRepository = reportedReviewRepository;
+        this.reviewCommentRepository = reviewCommentRepository;
     }
     @Transactional
     public void createReview(Integer userCode, ReviewCreateDto updateData) throws Exception {
@@ -95,5 +97,44 @@ public class ReviewService {
             System.out.println("이미 신고함");
         }
         //이 리뷰에 신고가 n건 있습니다 return
+    }
+    @Transactional
+    public void createReviewComment(Integer userCode, Integer reviewCode, String content) throws Exception {
+        try {
+            ReviewComment comment = new ReviewComment();
+            comment.setContent(content);
+            comment.setEdit(false);
+            comment.setUser(userRepository.getReferenceById(userCode));
+            comment.setWroteAt(LocalDateTime.now());
+            comment.setReview(reviewRepository.getReferenceById(reviewCode));
+            reviewCommentRepository.save(comment);
+        } catch (Exception e){
+            throw new Exception("에러 발생");
+        }
+    }
+    @Transactional
+    public void updateReviewComment(Integer userCode, Integer reviewCode, String content, Integer reviewCommentCode) throws Exception {
+        try {
+            ReviewComment reviewComment = reviewCommentRepository.findByReviewCommentCodeAndReviewReviewCodeAndUserUserCode(reviewCommentCode, reviewCode, userCode);
+            if(reviewComment==null){
+                throw new Exception("정상적이지 않은 요청");
+            }
+            reviewComment.setContent(content);
+            reviewCommentRepository.save(reviewComment);
+        } catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+    @Transactional
+    public void deleteReviewComment(Integer userCode, Integer reviewCode, Integer reviewCommentCode) throws Exception {
+        try {
+            ReviewComment reviewComment = reviewCommentRepository.findByReviewCommentCodeAndReviewReviewCodeAndUserUserCode(reviewCommentCode, reviewCode, userCode);
+            if(reviewComment==null){
+                throw new Exception("정상적이지 않은 요청");
+            }
+            reviewCommentRepository.delete(reviewComment);
+        } catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
     }
 }

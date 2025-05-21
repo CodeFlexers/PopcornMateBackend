@@ -1,6 +1,8 @@
 package com.popcornmate.review.controller;
 
+import com.popcornmate.repository.ReviewCommentQueryRepository;
 import com.popcornmate.repository.ReviewQueryRepository;
+import com.popcornmate.review.dto.ReviewCommentDto;
 import com.popcornmate.review.dto.ReviewCreateDto;
 import com.popcornmate.review.dto.ReviewDto;
 import com.popcornmate.review.service.ReviewService;
@@ -16,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
     private final ReviewService reviewService;
     private final ReviewQueryRepository reviewQueryRepository;
-    public ReviewController(ReviewService reviewService, ReviewQueryRepository reviewQueryRepository) {
+    private final ReviewCommentQueryRepository reviewCommentQueryRepository;
+    public ReviewController(ReviewService reviewService, ReviewQueryRepository reviewQueryRepository, ReviewCommentQueryRepository reviewCommentQueryRepository) {
         this.reviewService = reviewService;
         this.reviewQueryRepository = reviewQueryRepository;
+        this.reviewCommentQueryRepository = reviewCommentQueryRepository;
     }
     @GetMapping
     public ResponseEntity<Page<ReviewDto>> getReviewByMovieCode(@RequestParam Long movieCode, @RequestParam String sort, @RequestParam int page){
@@ -64,6 +68,37 @@ public class ReviewController {
     public ResponseEntity<String> reportReview(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, @RequestParam String reason){
         try {
             reviewService.reportReview(user.getUserCode(), reviewCode, reason);
+            return ResponseEntity.ok().build();
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/{reviewCode}/comments")
+    public ResponseEntity<Page<ReviewCommentDto>> getReviewCommentsByPageAndReview(@PathVariable Integer reviewCode, @RequestParam int page){
+        return ResponseEntity.ok().body(reviewCommentQueryRepository.findReviewCommentSorted(reviewCode, PageRequest.of(page, 10)));
+    }
+    @PostMapping("/{reviewCode}/comments")
+    public ResponseEntity<String> createReviewComment(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, String content){
+        try {
+            reviewService.createReviewComment(user.getUserCode(), reviewCode, content);
+            return ResponseEntity.ok().build();
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PatchMapping("/{reviewCode}/comments")
+    public ResponseEntity<String> updateReviewComment(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, String content, Integer reviewCommentCode){
+        try {
+            reviewService.updateReviewComment(user.getUserCode(), reviewCode, content, reviewCommentCode);
+            return ResponseEntity.ok().build();
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @DeleteMapping("/comments/{reviewCode}")
+    public ResponseEntity<String> deleteReviewComment(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, Integer reviewCommentCode){
+        try {
+            reviewService.deleteReviewComment(user.getUserCode(),reviewCode, reviewCommentCode);
             return ResponseEntity.ok().build();
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
