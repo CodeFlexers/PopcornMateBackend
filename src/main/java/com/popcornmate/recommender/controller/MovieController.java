@@ -20,9 +20,9 @@ class MovieController {
 
     // 스케줄러
     @GetMapping("/recent")
-    public ResponseEntity<List<MovieDto>> getRecentMovies(@RequestParam String query){
-
-        return ResponseEntity.ok().body(movieService.getRecentMovies(query));
+    public ResponseEntity<String> getRecentMovies(@RequestParam String query){
+        movieService.getRecentMovies();
+        return ResponseEntity.ok().body("db확인해보셈");
     }
 
 

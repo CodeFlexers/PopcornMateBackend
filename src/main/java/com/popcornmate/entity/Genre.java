@@ -15,17 +15,21 @@ import lombok.Setter;
 @Setter
 public class Genre {
 
-    @EmbeddedId
-    private GenreId id;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "genre_code")
+    private Integer genreCode;
+    @Column
+    private String name;
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("movieCode")
     @JoinColumn(name = "movie_code")
     private Movie movie;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("genreNameCode")
-    @JoinColumn(name = "genre_name_code")
-    private GenreName genreName;
-
+    public Genre(Integer genreCode, String name, Movie movie) {
+        this.genreCode = genreCode;
+        this.name = name;
+        this.movie = movie;
+    }
 }

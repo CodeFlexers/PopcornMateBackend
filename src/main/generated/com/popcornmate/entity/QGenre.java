@@ -22,11 +22,13 @@ public class QGenre extends EntityPathBase<Genre> {
 
     public static final QGenre genre = new QGenre("genre");
 
-    public final QGenreName genreName;
+    public final NumberPath<Integer> genreCode = createNumber("genreCode", Integer.class);
 
-    public final QGenreId id;
+    public final NumberPath<Integer> id = createNumber("id", Integer.class);
 
     public final QMovie movie;
+
+    public final StringPath name = createString("name");
 
     public QGenre(String variable) {
         this(Genre.class, forVariable(variable), INITS);
@@ -46,8 +48,6 @@ public class QGenre extends EntityPathBase<Genre> {
 
     public QGenre(Class<? extends Genre> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.genreName = inits.isInitialized("genreName") ? new QGenreName(forProperty("genreName")) : null;
-        this.id = inits.isInitialized("id") ? new QGenreId(forProperty("id")) : null;
         this.movie = inits.isInitialized("movie") ? new QMovie(forProperty("movie")) : null;
     }
 

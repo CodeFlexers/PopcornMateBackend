@@ -13,14 +13,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter@Setter
-@Builder
+
 public class Movie {
     @Id
     @Column(name = "movie_code")
     private Long movieCode;
     @Column(name = "title")
     private String title;
-    @Column(name = "overview")
+    @Column(columnDefinition = "LONGTEXT")
     private String overview;
     @Column(name = "release_date")
     private LocalDate releaseDate;
@@ -44,6 +44,22 @@ public class Movie {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
     private List<Genre> genres = new ArrayList<>();
+
+    public Movie(Long movieCode, String title, String overview, String  releaseDate, float popularity, String backdropPath, String originalLanguage, String posterPath, boolean isVideo, boolean isAdult, float voteAverage, int voteCount, List<Genre> genres) {
+        this.movieCode = movieCode;
+        this.title = title;
+        this.overview = overview;
+        this.releaseDate = LocalDate.parse(releaseDate);
+        this.popularity = popularity;
+        this.backdropPath = backdropPath;
+        this.originalLanguage = originalLanguage;
+        this.posterPath = posterPath;
+        this.isVideo = isVideo;
+        this.isAdult = isAdult;
+        this.voteAverage = voteAverage;
+        this.voteCount = voteCount;
+        this.genres = genres;
+    }
 }
