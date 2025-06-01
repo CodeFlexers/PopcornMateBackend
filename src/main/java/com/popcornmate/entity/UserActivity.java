@@ -19,19 +19,22 @@ public class UserActivity {
     @Column(name = "user_activity_code")
     private Integer userActivityCode;
 
+//    @JoinColumn(name = "movie_code")
+//    private Long movieCode;
+
     @JoinColumn(name = "movie_code")
-//    @ManyToOne
-    private Long movieCode;
+    @ManyToOne
+    private Movie movie;
 
     @JoinColumn(name = "user_code")
 //    @ManyToOne
     private Integer userCode;
 
-    @Column(name = "time_on_page")
+    @Column(name = "time_on_page", columnDefinition = "INT DEFAULT 2")
     private int timeOnPage;
 
-    public UserActivity(Long movieCode, Integer userCode, int timeOnPage) {
-        this.movieCode = movieCode;
+    public UserActivity(Movie movie, Integer userCode, int timeOnPage) {
+        this.movie = movie;
         this.userCode = userCode;
         this.timeOnPage = timeOnPage;
     }

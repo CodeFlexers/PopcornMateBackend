@@ -2,10 +2,7 @@ package com.popcornmate.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "genre")
@@ -13,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+//@ToString
 public class Genre {
 
     @Id
@@ -23,6 +21,8 @@ public class Genre {
     private Integer genreCode;
     @Column
     private String name;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_code")
     private Movie movie;
@@ -31,5 +31,11 @@ public class Genre {
         this.genreCode = genreCode;
         this.name = name;
         this.movie = movie;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Genre(id=" + id + ", name=" + name + " )";
     }
 }

@@ -51,9 +51,9 @@ public class JWTFilter extends OncePerRequestFilter {
             }
             if(authorization.equals("GodToken")){
                 User user = new User();
-                user.setId("test");
+                user.setId("test2");
                 user.setUserRole("ROLE_ADMIN");
-                user.setUserCode(1);
+                user.setUserCode(2);
                 CustomUserDetails c = new CustomUserDetails(user);
 
                 Authentication authToken = new UsernamePasswordAuthenticationToken(c, null, c.getAuthorities());

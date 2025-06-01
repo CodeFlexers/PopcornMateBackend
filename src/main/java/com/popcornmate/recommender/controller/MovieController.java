@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/movies")
+@RequestMapping(path = "/movies", produces = "application/json; charset=utf8")
 @RequiredArgsConstructor // final 필드인 WebClient를 자동 생성자 주입
 
 class MovieController {
@@ -20,7 +20,7 @@ class MovieController {
 
     // 스케줄러
     @GetMapping("/recent")
-    public ResponseEntity<String> getRecentMovies(@RequestParam String query){
+    public ResponseEntity<String> getRecentMovies(){
         movieService.getRecentMovies();
         return ResponseEntity.ok().body("db확인해보셈");
     }

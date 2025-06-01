@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter@Setter
-
+@ToString
 public class Movie {
     @Id
     @Column(name = "movie_code")

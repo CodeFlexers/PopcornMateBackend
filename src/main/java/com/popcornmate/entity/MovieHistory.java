@@ -21,16 +21,18 @@ public class MovieHistory {
     private Integer movieHistoryCode;
 
     @JoinColumn(name = "movie_code")
-//    @ManyToOne
-    private Long movieCode;
+    @ManyToOne
+    private Movie movie;
 
     @JoinColumn(name = "user_code")
 //    @ManyToOne
     private Integer userCode;
 
-    public MovieHistory(Integer userCode, Long movieCode) {
+    @Column(name = "like_score", columnDefinition = "INT DEFAULT 4")
+    private int likeScore;
 
-        this.movieCode = movieCode;
+    public MovieHistory(Integer userCode, Movie movie) {
+        this.movie = movie;
         this.userCode = userCode;
     }
 }

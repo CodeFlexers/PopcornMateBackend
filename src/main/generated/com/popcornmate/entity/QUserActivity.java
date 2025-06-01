@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,9 +18,11 @@ public class QUserActivity extends EntityPathBase<UserActivity> {
 
     private static final long serialVersionUID = -493268504L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QUserActivity userActivity = new QUserActivity("userActivity");
 
-    public final NumberPath<Long> movieCode = createNumber("movieCode", Long.class);
+    public final QMovie movie;
 
     public final NumberPath<Integer> timeOnPage = createNumber("timeOnPage", Integer.class);
 
@@ -28,15 +31,24 @@ public class QUserActivity extends EntityPathBase<UserActivity> {
     public final NumberPath<Integer> userCode = createNumber("userCode", Integer.class);
 
     public QUserActivity(String variable) {
-        super(UserActivity.class, forVariable(variable));
+        this(UserActivity.class, forVariable(variable), INITS);
     }
 
     public QUserActivity(Path<? extends UserActivity> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QUserActivity(PathMetadata metadata) {
-        super(UserActivity.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QUserActivity(PathMetadata metadata, PathInits inits) {
+        this(UserActivity.class, metadata, inits);
+    }
+
+    public QUserActivity(Class<? extends UserActivity> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.movie = inits.isInitialized("movie") ? new QMovie(forProperty("movie")) : null;
     }
 
 }

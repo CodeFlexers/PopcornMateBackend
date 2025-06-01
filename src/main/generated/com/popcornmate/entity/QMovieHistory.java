@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,24 +18,37 @@ public class QMovieHistory extends EntityPathBase<MovieHistory> {
 
     private static final long serialVersionUID = 1226494258L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QMovieHistory movieHistory = new QMovieHistory("movieHistory");
 
-    public final NumberPath<Long> movieCode = createNumber("movieCode", Long.class);
+    public final NumberPath<Integer> likeScore = createNumber("likeScore", Integer.class);
+
+    public final QMovie movie;
 
     public final NumberPath<Integer> movieHistoryCode = createNumber("movieHistoryCode", Integer.class);
 
     public final NumberPath<Integer> userCode = createNumber("userCode", Integer.class);
 
     public QMovieHistory(String variable) {
-        super(MovieHistory.class, forVariable(variable));
+        this(MovieHistory.class, forVariable(variable), INITS);
     }
 
     public QMovieHistory(Path<? extends MovieHistory> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QMovieHistory(PathMetadata metadata) {
-        super(MovieHistory.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QMovieHistory(PathMetadata metadata, PathInits inits) {
+        this(MovieHistory.class, metadata, inits);
+    }
+
+    public QMovieHistory(Class<? extends MovieHistory> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.movie = inits.isInitialized("movie") ? new QMovie(forProperty("movie")) : null;
     }
 
 }

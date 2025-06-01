@@ -3,6 +3,7 @@ package com.popcornmate.recommender.service;
 import com.popcornmate.entity.Genre;
 import com.popcornmate.entity.Movie;
 import com.popcornmate.recommender.dto.TmdbGenreResponse;
+import com.popcornmate.recommender.dto.TmdbMovieDTO;
 import com.popcornmate.repository.MovieRepository;
 import com.popcornmate.recommender.dto.TmdbMovieResponse;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class MovieService {
 
             List<Movie> movies = new ArrayList<>();
 
-            for (var res : response.getResults()) {
+            for (TmdbMovieDTO res : response.getResults()) {
 
                 Movie movie = new Movie(
                         res.getId().longValue(),
