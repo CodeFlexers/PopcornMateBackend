@@ -50,8 +50,8 @@ public class ReviewController {
     }
 
     @PostMapping("/reactions/{reviewCode}")
-    public ResponseEntity<ReviewReactionEnum> reactionReview(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, @RequestParam String reaction){
-        ReviewReactionEnum res = reviewService.reactionReview(user.getUserCode(),reviewCode, reaction);
+    public ResponseEntity<String> reactionReview(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, @RequestParam String reaction){
+        String  res = reviewService.reactionReview(user.getUserCode(),reviewCode, reaction);
         return ResponseEntity.ok().body(res);
     }
 
@@ -67,9 +67,8 @@ public class ReviewController {
     }
 
     @PostMapping("/{reviewCode}/comments")
-    public ResponseEntity<String> createReviewComment(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, String content){
-        reviewService.createReviewComment(user.getUserCode(), reviewCode, content);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ReviewCommentDto> createReviewComment(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Integer reviewCode, String content){
+        return ResponseEntity.ok().body(reviewService.createReviewComment(user.getUserCode(), reviewCode, content));
     }
 
     @PatchMapping("/{reviewCode}/comments")

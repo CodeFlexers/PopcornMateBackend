@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
@@ -27,22 +28,17 @@ public class JWTFilter extends OncePerRequestFilter {
      * @param path 요청 경로
      * @return bool
      */
-    private boolean checkUrl(String path){
+    List<String> exclude = List.of("/login", "/uploads", "/register","/favicon");
 
-        String[] needAuthUrl = {"/login","/join"};
-
-        for (String s : needAuthUrl) {
-            if (s.startsWith(path)) {
-                return false;
-            }
-        }
-        return true;
+    boolean isExcluded(String path) {
+        return exclude.stream().anyMatch(path::startsWith);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        if(checkUrl(path)){
+        if(!isExcluded(path)){
+
             String authorization = request.getHeader("Authorization");
             if(authorization == null){
                 System.out.println("token이 없거나, Bearer가 포함되어 있지 않습니다.");

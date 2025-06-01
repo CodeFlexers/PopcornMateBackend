@@ -2,6 +2,7 @@ package com.popcornmate.review.service;
 
 import com.popcornmate.entity.*;
 import com.popcornmate.repository.*;
+import com.popcornmate.review.dto.ReviewCommentDto;
 import com.popcornmate.review.dto.ReviewCreateDto;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -65,7 +66,7 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
     @Transactional
-    public ReviewReactionEnum reactionReview(Integer userCode, Integer reviewCode, String reaction) {
+    public String reactionReview(Integer userCode, Integer reviewCode, String reaction) {
         ReviewReactionEnum requested = Arrays.stream(ReviewReactionEnum.values())
                 .filter(e -> e.name().equals(reaction.trim()))
                 .findFirst()
@@ -90,19 +91,20 @@ public class ReviewService {
                     requested
             );
             reviewReactionRepository.save(newReaction);
-            return requested;
+            return requested.name();
         }
         ReviewReactionEnum current = existing.getReaction();
         // 동일한 반응이면 삭제
         if (current == requested) {
+            String res = current.name();
             reviewReactionRepository.delete(existing);
-            return null; // React NONE
+            return "delete_"+res; // React NONE
         }
 
         // 반대 반응이면 값만 교체
         existing.setReaction(requested);
         existing.setReactedTime(LocalDateTime.now());
-        return requested;
+        return "change_"+current;
     }
     @Transactional
     public void reportReview(Integer userCode, Integer reviewCode, String reason) {
@@ -121,7 +123,7 @@ public class ReviewService {
         }
     }
     @Transactional
-    public void createReviewComment(Integer userCode, Integer reviewCode, String content) {
+    public ReviewCommentDto createReviewComment(Integer userCode, Integer reviewCode, String content) {
         Review review;
         User user;
         try {
@@ -134,6 +136,16 @@ public class ReviewService {
         ReviewComment comment = new ReviewComment(content,false,LocalDateTime.now(),user,review);
 
         reviewCommentRepository.save(comment);
+        ReviewCommentDto dto = new ReviewCommentDto(
+                comment.getReviewCommentCode(),
+                comment.getContent(),
+                LocalDateTime.now(),
+                comment.isEdit(),
+                comment.getReview().getReviewCode(),
+                comment.getUser().getNickname(),
+                comment.getUser().getProfileImage()
+        );
+        return dto;
     }
     @Transactional
     public void updateReviewComment(Integer userCode, Integer reviewCode, String content, Integer reviewCommentCode) {

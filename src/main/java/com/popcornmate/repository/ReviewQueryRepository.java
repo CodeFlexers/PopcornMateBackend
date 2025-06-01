@@ -11,6 +11,7 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Repository
 public class ReviewQueryRepository {
+    @Value("${file.download-url}")
+    private String url;
     private final JPAQueryFactory queryFactory;
     public Page<ReviewDto> findReviewSorted(Long movieCode, String sort, Pageable pageable){
         QReview review = QReview.review;
@@ -67,7 +70,8 @@ public class ReviewQueryRepository {
                         t.get(review.isEdit),
                         t.get(review.movie.movieCode),
                         t.get(review.user.nickname),
-                        t.get(review.user.profileImage),
+                        url+t.get(review.user.profileImage),
+
                         t.get(comment.countDistinct()),
                         t.get(likeCountExpr),    // 좋아요 수
                         t.get(dislikeCountExpr)    // 싫어요 수

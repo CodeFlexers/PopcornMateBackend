@@ -26,7 +26,7 @@ public class ReviewComment {
     private boolean isEdit;
 
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_code")
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)

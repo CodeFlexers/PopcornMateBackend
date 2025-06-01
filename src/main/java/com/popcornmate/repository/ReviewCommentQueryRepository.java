@@ -5,6 +5,7 @@ import com.popcornmate.review.dto.ReviewCommentDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,8 @@ import java.util.List;
 @Repository
 public class ReviewCommentQueryRepository {
     private final JPAQueryFactory queryFactory;
+    @Value("${file.download-url}")
+    private String url;
 
     public Page<ReviewCommentDto> findReviewCommentSorted(Integer reviewCode, Pageable pageable){
         QReviewComment comment = QReviewComment.reviewComment;
