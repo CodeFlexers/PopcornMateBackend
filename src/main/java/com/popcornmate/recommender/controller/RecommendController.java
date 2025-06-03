@@ -8,10 +8,7 @@ import com.popcornmate.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +20,20 @@ public class RecommendController {
 
     // 생성자 주입
     private final RecommendService recommendService;
+
+
+    // 영화가 마음에 드는지, 별로인지
+    @PostMapping("/{movieCode}/like")
+    public ResponseEntity<String> createMovieLike(@AuthenticationPrincipal CustomUserDetails user,
+                                                  @PathVariable Long movieCode,
+                                                  @RequestParam int likeScore){
+
+        // 장르, 분위기 선택에 따른 랜덤 영화 추천
+        // 분위기는 감동적인, 슬픈, 유쾌한, 무서운, 따뜻한, - 장르 랜덤
+        String result = recommendService.createMovieLike(user.getUserCode(),movieCode, likeScore);
+
+        return ResponseEntity.ok().body(result);
+    }
 
 
     // 장르나 분위기 설정하면 랜덤 영화 추천

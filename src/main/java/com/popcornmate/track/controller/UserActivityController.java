@@ -28,14 +28,14 @@ public class UserActivityController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("/watched-movies/{movieCode}")
-    public ResponseEntity<?> recordUserMovie(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long movieCode){
-
-        String result = userActivityService.recordUserMovie(user.getUserCode(), movieCode);
-
-        return ResponseEntity.ok().body(result);
-
-    }
+//    @PostMapping("/watched-movies/{movieCode}")
+//    public ResponseEntity<?> recordUserMovie(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long movieCode){
+//
+//        String result = userActivityService.recordUserMovie(user.getUserCode(), movieCode);
+//
+//        return ResponseEntity.ok().body(result);
+//
+//    }
 
 
 

@@ -39,16 +39,16 @@ public class UserActivityService {
         }
     }
 
-    public String recordUserMovie(Integer userCode, Long movieCode) {
-
-        try{
-            Movie movie = movieRepository.getReferenceById(movieCode);
-            movieHistoryRepository.save(new MovieHistory(userCode, movie));
-            return "리뷰 등록 시 시청한 영화 등록 성공!!";
-        } catch (Exception e) {
-            throw new RuntimeException("리뷰 등록 시 시청한 영화 등록 실패!!!");
-        }
-
-    }
+//    public String recordUserMovie(Integer userCode, Long movieCode) {
+//
+//        try{
+//            Movie movie = movieRepository.getReferenceById(movieCode);
+//            movieHistoryRepository.save(new MovieHistory(userCode, movie));
+//            return "리뷰 등록 시 시청한 영화 등록 성공!!";
+//        } catch (Exception e) {
+//            throw new RuntimeException("리뷰 등록 시 시청한 영화 등록 실패!!!");
+//        }
+//
+//    }
 
 }

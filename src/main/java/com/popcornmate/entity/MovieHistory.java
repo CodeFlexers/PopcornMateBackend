@@ -31,8 +31,11 @@ public class MovieHistory {
     @Column(name = "like_score", columnDefinition = "INT DEFAULT 4")
     private int likeScore;
 
-    public MovieHistory(Integer userCode, Movie movie) {
+    public MovieHistory(Integer userCode, Movie movie, int likeScore) {
         this.movie = movie;
         this.userCode = userCode;
+        this.likeScore = likeScore;
     }
+
+
 }

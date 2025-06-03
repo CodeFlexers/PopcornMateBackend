@@ -31,6 +31,19 @@ public class RecommendService {
 
 
     @Transactional
+    public String createMovieLike(Integer userCode, Long movieCode, int likeScore) {
+
+        try{
+            Movie movie = movieRepository.getReferenceById(movieCode);
+            movieHistoryRepository.save(new MovieHistory(userCode, movie, likeScore));
+            return "리뷰 등록 시 시청한 영화 등록 성공!!";
+        } catch (Exception e) {
+            throw new RuntimeException("리뷰 등록 시 시청한 영화 등록 실패!!!");
+        }
+    }
+
+
+    @Transactional
     public RandomRecommendationDto getRandomMovie(Integer genreCode) {
 
         // 받은 장르 코드의 영화 조회
@@ -93,10 +106,9 @@ public class RecommendService {
 
 //        MovieHomeDto
 
-
-
-
         return null;
 
     }
+
+
 }
