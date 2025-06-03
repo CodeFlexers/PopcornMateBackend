@@ -2,6 +2,7 @@ package com.popcornmate.recommender.controller;
 
 
 import com.popcornmate.recommender.dto.ActivityRecommendationDto;
+import com.popcornmate.recommender.dto.MovieHomeDto;
 import com.popcornmate.recommender.dto.RandomRecommendationDto;
 import com.popcornmate.recommender.service.RecommendService;
 import com.popcornmate.security.dto.CustomUserDetails;
@@ -53,11 +54,11 @@ public class RecommendController {
     @GetMapping("/activities")
     public ResponseEntity<?> getUserActivityMovies(@AuthenticationPrincipal CustomUserDetails user){
 
-         List<ActivityRecommendationDto> activityRecommendationDtos = recommendService.getUserActivityMovies(user.getUserCode());
+         List<MovieHomeDto> activityRecommendationDtos = recommendService.getUserActivityMovies(user.getUserCode());
 
          // movieCode로 영화의 카테고리만 조회, 카테고리별 개수 *
 
-         return null;
+         return ResponseEntity.ok().body(activityRecommendationDtos);
     }
 
 

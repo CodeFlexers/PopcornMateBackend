@@ -228,19 +228,7 @@ public class MovieService {
 
         return movie;
     }
-    public List<MovieHomeDto> getMovieByPopularity(){
-        List<Movie> movie = movieRepository.getMovieByPopularity();
-        List<MovieHomeDto> dtos = new ArrayList<>();
-        for(Movie m : movie){
-            MovieHomeDto md = new MovieHomeDto(
-                    m.getMovieCode(),
-                    m.getPosterPath()
-            );
-            dtos.add(md);
-            System.out.println(m.getPosterPath());
-        }
-        return dtos;
-    }
+
 
     public MovieDetailDto getMovie(Long movieCode) {
         Movie movie = movieRepository.findById(movieCode).orElseThrow();
@@ -263,16 +251,40 @@ public class MovieService {
         );
         return dto;
     }
+    public List<MovieHomeDto> getMovieByPopularity(){
+        List<Movie> movie = movieRepository.getMovieByPopularity();
+        List<MovieHomeDto> dtos = new ArrayList<>();
+        for(Movie m : movie){
+            boolean isNew = isWithinOneMonth(m.getReleaseDate());
+            MovieHomeDto md = new MovieHomeDto(
+                    m.getMovieCode(),
+                    m.getPosterPath(),
+                    isNew,
+                    m.isAdult()
+            );
+            dtos.add(md);
+            System.out.println(m.getPosterPath());
+        }
+        return dtos;
+    }
     public List<MovieHomeDto> getRecentMovie(){
         List<Movie> movie = movieRepository.getRecentMovie();
         List<MovieHomeDto> dto = new ArrayList<>();
         for(Movie m : movie){
+            boolean isNew = isWithinOneMonth(m.getReleaseDate());
             MovieHomeDto dt = new MovieHomeDto(
                     m.getMovieCode(),
-                    m.getPosterPath()
+                    m.getPosterPath(),
+                    isNew,
+                    m.isAdult()
             );
             dto.add(dt);
         }
         return dto;
+    }
+    private boolean isWithinOneMonth(LocalDate targetDate) {
+        LocalDate today = LocalDate.now();
+        LocalDate oneMonthAgo = today.minusMonths(1);
+        return !targetDate.isBefore(oneMonthAgo) && !targetDate.isAfter(today);
     }
 }

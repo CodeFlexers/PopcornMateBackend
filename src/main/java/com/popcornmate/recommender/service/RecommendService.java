@@ -4,16 +4,15 @@ package com.popcornmate.recommender.service;
 import com.popcornmate.entity.Genre;
 import com.popcornmate.entity.Movie;
 import com.popcornmate.entity.MovieHistory;
-import com.popcornmate.entity.UserActivity;
 import com.popcornmate.recommender.dto.*;
 import com.popcornmate.repository.MovieHistoryRepository;
 import com.popcornmate.repository.MovieRepository;
 import com.popcornmate.repository.UserActivityRepository;
 import com.popcornmate.repository.UserGenresProjection;
-import com.popcornmate.track.service.UserActivityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -72,7 +71,7 @@ public class RecommendService {
 
 
     @Transactional
-    public List<ActivityRecommendationDto> getUserActivityMovies(Integer userCode) {
+    public List<MovieHomeDto> getUserActivityMovies(Integer userCode) {
 
         // 영화 카테고리 코드
         // 가중치 계산: genre_count * time_on_page
@@ -86,28 +85,38 @@ public class RecommendService {
 
 
         List<UserGenresProjection> userGenres = userActivityRepository.findAllGenresCountByUserCode(userCode);
-        Map<Integer, Long> map = new HashMap<>();
-        for (UserGenresProjection genre : userGenres) {
-            System.out.println(genre.getGenreCode() + " - " + genre.getName() + " : " +
-                    genre.getGenreCount() + "개, " +
-                    genre.getTimeLike() + " 점수" + genre.getWait());
-            map.put(genre.getGenreCode(), genre.getWait());
+        if(userGenres.isEmpty()){
+            System.out.println("없음");
+            return null;
+        } else {
+            Map<Integer, Long> map = new HashMap<>();
+            for (UserGenresProjection genre : userGenres) {
+                System.out.println(genre.getGenreCode() + " - " + genre.getName() + " : " +
+                        genre.getGenreCount() + "개, " +
+                        genre.getTimeLike() + " 점수" + genre.getWait());
+                map.put(genre.getGenreCode(), genre.getWait());
+            }
+
+            Integer maxKey = map.entrySet().stream().max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey).orElse(null);
+            System.out.println(maxKey);
+
+
+            List<Movie> movies = movieRepository.getMovieByGenreCode(maxKey);
+            List<MovieHomeDto> dto = new ArrayList<>();
+
+            for(Movie m : movies){
+                boolean isNew = isWithinOneMonth(m.getReleaseDate());
+                MovieHomeDto d = new MovieHomeDto(m.getMovieCode(),m.getPosterPath(), isNew, m.isAdult());
+                dto.add(d);
+            }
+            return dto;
         }
-
-        Integer maxKey = map.entrySet().stream().max(Map.Entry.comparingByValue())
-                        .map(Map.Entry::getKey).orElse(null);
-        System.out.println(maxKey);
-
-
-        List<Movie> movies = movieRepository.getMovieByGenreCode(maxKey);
-        for(Movie m : movies){
-            System.out.println(m.getTitle());
-        }
-
-//        MovieHomeDto
-
-        return null;
-
+    }
+    private boolean isWithinOneMonth(LocalDate targetDate) {
+        LocalDate today = LocalDate.now();
+        LocalDate oneMonthAgo = today.minusMonths(1);
+        return !targetDate.isBefore(oneMonthAgo) && !targetDate.isAfter(today);
     }
 
 

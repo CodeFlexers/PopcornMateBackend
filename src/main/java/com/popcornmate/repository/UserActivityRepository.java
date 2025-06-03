@@ -26,7 +26,7 @@ public interface UserActivityRepository extends JpaRepository<UserActivity, Inte
                     FROM user_activity ua
                     JOIN movie m ON ua.movie_code = m.movie_code
                     JOIN genre g ON m.movie_code = g.movie_code
-                    WHERE ua.user_code = 2
+                    WHERE ua.user_code = :userCode
                     GROUP BY g.genre_code
                     UNION ALL
                     SELECT g.genre_code, g.name,
@@ -35,7 +35,7 @@ public interface UserActivityRepository extends JpaRepository<UserActivity, Inte
                     FROM movie_history mh
                     JOIN movie m ON mh.movie_code = m.movie_code
                     JOIN genre g ON m.movie_code = g.movie_code
-                    WHERE mh.user_code = 2
+                    WHERE mh.user_code = :userCode
                     GROUP BY g.genre_code
                 ) AS combined
                 GROUP BY combined.genre_code;

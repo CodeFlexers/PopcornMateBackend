@@ -1,27 +1,23 @@
 package com.popcornmate.recommender.dto;
 
+import lombok.Getter;
+
+@Getter
 public class MovieHomeDto {
     private Long movieCode;
     private String poster;
+    private boolean isNew;
+    private boolean isAdult;
 
     public MovieHomeDto(Long movieCode, String poster) {
         this.movieCode = movieCode;
         this.poster = poster;
     }
 
-    public Long getMovieCode() {
-        return movieCode;
-    }
-
-    public void setMovieCode(Long movieCode) {
+    public MovieHomeDto(Long movieCode, String poster, boolean isNew, boolean isAdult) {
         this.movieCode = movieCode;
-    }
-
-    public String getPoster() {
-        return poster;
-    }
-
-    public void setPoster(String poster) {
-        this.poster = "https://image.tmdb.org/t/p/w500"+poster;
+        this.poster = poster;
+        this.isNew = isNew;
+        this.isAdult = isAdult;
     }
 }

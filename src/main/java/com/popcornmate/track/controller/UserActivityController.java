@@ -20,8 +20,8 @@ public class UserActivityController {
     }
 
     @PostMapping("/movies/{movieCode}/enter")
-    public ResponseEntity<?> recordUserEnter(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long movieCode, @RequestBody PageOnTime pageOnTime){
-
+    public ResponseEntity<?> recordUserEnter(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long movieCode, PageOnTime pageOnTime){
+        System.out.println("?");
         // 등록 성공, 실패 메시지
         String result = userActivityService.recordUserEnter(movieCode, user.getUserCode(), pageOnTime);
 
