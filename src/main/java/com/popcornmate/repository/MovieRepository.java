@@ -16,4 +16,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query("SELECT m FROM Movie m ORDER BY m.releaseDate DESC LIMIT 20")
     List<Movie> getRecentMovie();
+    @Query("SELECT m FROM Movie m JOIN m.genres g WHERE g.genreCode = :genreCode")
+    List<Movie> getMovieByGenreCode(Integer genreCode);
 }
