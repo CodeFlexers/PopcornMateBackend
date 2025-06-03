@@ -36,4 +36,17 @@ public class MovieDto {
 
     private String posterPath;
 
+    public MovieDto(Long movieCode, String title, LocalDate releaseDate, Float popularity, String overview, String backdropPath, boolean adult, boolean video, String originalLanguage, Integer voteCount, String posterPath) {
+        this.movieCode = movieCode;
+        this.title = title;
+        this.releaseDate = releaseDate;
+        this.popularity = popularity;
+        this.overview = overview;
+        this.backdropPath = backdropPath;
+        this.adult = adult;
+        this.video = video;
+        this.originalLanguage = originalLanguage;
+        this.voteCount = voteCount;
+        this.posterPath = posterPath;
+    }
 }

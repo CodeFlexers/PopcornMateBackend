@@ -17,9 +17,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<UserDto> getUserById(){
-        return null;
+    @GetMapping("/{userCode}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Integer userCode){
+        return ResponseEntity.ok().body(userService.getUserById(userCode));
     }
 
     @PatchMapping("/profile")

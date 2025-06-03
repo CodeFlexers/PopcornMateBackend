@@ -74,4 +74,17 @@ public class UserService {
         user.setLastLoginTime(LocalDateTime.now());
         userRepository.save(user);
     }
+
+    public UserDto getUserById(Integer userCode) {
+        User user = userRepository.findById(userCode).orElseThrow();
+        UserDto u = new UserDto(
+                user.getUserCode(),
+                user.getId(),
+                user.getEmail(),
+                user.getProfileImage(),
+                user.getLastLoginTime(),
+                user.getNickname()
+        );
+        return u;
+    }
 }
